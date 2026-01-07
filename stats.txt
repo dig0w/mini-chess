@@ -1,11 +1,13 @@
-Engines                     10k Moves Avg
-Matrix Engine (v1.0)         0.0385 ms
-Bitboard Engine (v1.5)       0.0038 ms
-New Bitboard Enginge (v2.0)  0.0034 ms
-                            10k genMoves Avg
-Matrix Engine (v1.0)         0.238 ms
-Bitboard Engine (v1.5)       0.175 ms
-New Bitboard Enginge (v2.0)  0.081 ms
+Engines                      10k Moves Avg
+Matrix Engine (v1.0)          0.0385 ms
+Bitboard Engine (v1.5)        0.0038 ms
+New Bitboard Enginge (v2.0)   0.0034 ms
+Array Move Gen Enginge (v2.5) 0.0022 ms
+                             10k genMoves Avg
+Matrix Engine (v1.0)          0.238 ms
+Bitboard Engine (v1.5)        0.175 ms
+New Bitboard Enginge (v2.0)   0.081 ms
+Array Move Gen Enginge (v2.5) 0.008 ms
 
 
 Methods                     Opening     Before              After               Response     Improvement
@@ -44,6 +46,4 @@ My ai (19/12 10:00 d=4) vs Stockfish (listudy.org)      Black Won   1866451 66
 My ai (20/12 20:00 t=2s) vs Stockfish (listudy.org)     Black Won   196474  56      With Mobility
 My ai (20/12 20:00 t=2s) vs Stockfish (listudy.org)     Black Won   977518  76      No Mobility
 
-tips:
-remove bitboards 2 int, and move to bigint
-make move gen return ints not objects.
+My ai (22/12 11:00 t=2s) vs Stockfish (listudy.org)     Black Won   3535274 56      Too many nodes

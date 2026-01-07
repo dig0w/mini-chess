@@ -342,12 +342,8 @@ export class ChessRender {
     highlightMoves(row, col) {
         this.desHighlightMoves();
 
-        const startTime = performance.now();
-
         const moves = this.engine.getLegalMoves(this.engine.toSq(row, col));
-
-        const finalTime = performance.now() - startTime;
-        console.log('getLegalMoves:', finalTime);
+        console.log('getLegalMoves:', moves);
 
         moves.forEach(([ fsq, tsq, promote ]) => {
             const { r, c } = this.engine.fromSq(tsq);
@@ -402,9 +398,11 @@ export class ChessRender {
         const newPiece = e.target.dataset.piece;
             if (!newPiece) return;
 
-        const { fr, fc, tr, tc } = this.lastPromote;
+        const fromSq = this.engine.toSq(this.lastPromote?.fr, this.lastPromote?.fc);
+        const toSq = this.engine.toSq(this.lastPromote?.tr, this.lastPromote?.tc);
 
-        this.engine.MovePiece(fr, fc, tr, tc, newPiece);
+        console.log('Promote pawn to', newPiece);
+        this.engine.MovePiece(fromSq, toSq, newPiece);
 
         this.lastPromote = null;
         this.promotionScreen.classList.add('hidden');

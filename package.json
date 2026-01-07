@@ -1,0 +1,13 @@
+{
+  "name": "JavaScript-Chess-AI",
+  "version": "2.5",
+  "type": "module",
+  "main": "UCI.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "dig0w",
+  "license": "ISC",
+  "description": ""
+}

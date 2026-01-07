@@ -50,6 +50,9 @@ This new version, stage three, is now capable of doing evaluating roughly 11k no
 - Late Move Reductions
 - Killer & History Heuristics
 - Delta & Futility Pruning
+- Null-move Pruning
+- Iterative Deepening
+
 
 <p align="right">(<a href="#JavaScript-Chess-AI">back to top</a>)</p>
 
@@ -57,11 +60,8 @@ This new version, stage three, is now capable of doing evaluating roughly 11k no
 ## Possible Future Work
 
 - [ ] Game Phases
-- [ ] Null-move Pruning
 - [ ] Static Exchange Evaluation
 - [ ] Razoring
-- [ ] Iterative Deepening
-- [ ] UCI
 
 <p align="right">(<a href="#JavaScript-Chess-AI">back to top</a>)</p>
 

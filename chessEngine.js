@@ -101,7 +101,7 @@ export class ChessEngine {
     }
 
 
-    MovePiece(fromSq, toSq, promotePiece = null) {
+    MovePiece(fromSq, toSq, promotePiece = null, force = false) {
         if (this.gameCondition !== 'PLAYING') {
             console.error('GAME CONDITION', { fromSq, toSq, promote: promotePiece });
             return false;
@@ -110,7 +110,7 @@ export class ChessEngine {
             console.error('EMPTY PIECE');
             return false;
         }
-        if (this.isWhite(fromSq) == (this.turn == 1)) {
+        if (!force && this.isWhite(fromSq) == (this.turn == 1)) {
             console.error('OPP PIECE');
             return false;
         }
@@ -565,11 +565,11 @@ export class ChessEngine {
                 const promoStart = isWhite ? this.squares - this.cols : 0;
                 const promoEnd   = isWhite ? this.squares : this.cols;
                 for (let i = 0; i < moves.length; i++) {
-                    const toSq = moves[i][0];
+                    const toSq = moves[i][1];
 
-                    if (toSq >= promoStart && toSq < promoEnd && moves[i][1] == null) {
+                    if (toSq >= promoStart && toSq < promoEnd && moves[i][2] == null) {
                         for (const promote of this.promoPieces) {
-                            moves.push([ sq, moves[i][0], promote ]);
+                            moves.push([ sq, moves[i][1], promote ]);
                         }
 
                         moves.splice(i, 1);
@@ -650,19 +650,10 @@ export class ChessEngine {
     getPlayerLegalMoves(isWhite) {
         const moves = [];
 
-        // get list of bitboards for the side to move
-        const pieceList = isWhite
-            ? ['P','N','B','R','Q','K']
-            : ['p','n','b','r','q','k'];
+        let occupied = isWhite ? this.occupiedWhite : this.occupiedBlack;
 
-        for (const piece of pieceList) {
-            let bb = this.pieces[piece].clone();  // copy so we can pop bits
-
-            // iterate through every piece position (much faster than 64-square scan)
-            for (let sq = bb.bitIndex(); sq !== -1; bb.clearBit(sq), sq = bb.bitIndex()) {
-                // getLegalMoves already returns only pseudo legal moves
-                moves.push(...this.getLegalMoves(sq));
-            }
+        for (const sq of occupied.allSquares()) {
+            moves.push(...this.getLegalMoves(sq));
         }
 
         return moves;
@@ -861,8 +852,8 @@ export class ChessEngine {
             this.zobrist.xorTurn();
         }
 
-        if (this.turn == 0 && this.whiteAI) this.whiteAI?.Play();
-        if (this.turn == 1 && this.blackAI) this.blackAI?.Play();
+        if (this.turn == 0 && this.whiteAI && this.renderer) this.whiteAI?.Play();
+        if (this.turn == 1 && this.blackAI && this.renderer) this.blackAI?.Play();
     }
 
 
@@ -907,6 +898,20 @@ export class ChessEngine {
         return this.getPieceSq(sq);
     }
 
+    squareToNotation(sq) {
+        const { r, c } = this.fromSq(sq);
+
+        const file = String.fromCharCode('a'.charCodeAt(0) + c);
+        const rank = (this.rows - r).toString();
+        return file + rank;
+    }
+
+    notationToSquare(notation) {
+        const file = notation.charCodeAt(0) - 'a'.charCodeAt(0);
+        const rank = parseInt(notation[1]) - 1;
+
+        return rank * this.rows + file;
+    }
 
     getMoveNotation(fullMove) {
         if (!fullMove) return;
@@ -922,7 +927,6 @@ export class ChessEngine {
         } = fullMove;
 
         const { r: fr, c: fc } = this.fromSq(fromSq);
-        const { r: tr, c: tc } = this.fromSq(toSq);
 
         let notation = '';
 
@@ -955,7 +959,7 @@ export class ChessEngine {
 
             if (isCapture) notation += 'x';
 
-            notation += squareName(tr, tc);
+            notation += this.squareToNotation(toSq);
 
             // Promotion
             if (promotePiece) {
@@ -980,6 +984,8 @@ export class ChessEngine {
 
         return notation;
     }
+
+    getMoveUCI(move) { return `${this.squareToNotation(move[0])}${this.squareToNotation(move[1])}${move[2] ? move[2] : ''}` }
 
     toSq(r, c) { return (this.rows - 1 - r) * this.cols + c; }
     fromSq(sq) { return { r: this.rows - 1 - Math.floor(sq / this.rows), c: sq % this.cols } }

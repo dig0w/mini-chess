@@ -1,0 +1,8 @@
+Build a browser chess engine, to play against my AI.
+
+✅ To Do List:
+[ ] AI game phases
+[ ] Package it
+
+
+⚠️ Known Issues:

@@ -4,7 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Play vs AI | Mini Chess</title>
+
+    <title>Play vs AI | Chess</title>
+    <link rel="shortcut icon" href="./assets/chess.com_bp.png" type="image/x-icon">
 
     <link rel="stylesheet" href="./style.css">
 </head>
@@ -83,7 +85,7 @@
     import { delay } from './utils.js';
     import { ChessEngine } from './chessEngine.js';
     import { ChessRender } from './chessRender.js';
-    import { AI } from './ai.js';
+    import { ChessAI } from './ai.js';
 
     const chess = new ChessEngine();
     const render = new ChessRender(chess);
@@ -96,12 +98,12 @@
         document.getElementById('switchside-btn').textContent = 'Play White';
 
         white = false;
-        AIp = new AI(chess, true);
+        AIp = new ChessAI(chess, true);
     } else {
         document.getElementById('switchside-btn').textContent = 'Play Black';
 
         white = true;
-        AIp = new AI(chess, false);
+        AIp = new ChessAI(chess, false);
     }
 
     window.onload = async (e) => {

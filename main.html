@@ -4,16 +4,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mini Chess</title>
 
+    <title>Chess</title>
+    <link rel="shortcut icon" href="./assets/chess.com_bp.png" type="image/x-icon">
+    
     <link rel="stylesheet" href="./style.css">
 </head>
 
 <body>
 
     <main class="menu-container">
-        <h1>Mini Chess</h1>
-        <p>5x5 Strategy Game</p>
+        <h1>Chess</h1>
+        <p>8x8 Strategy Game</p>
 
         <div class="menu-buttons">
             <button id="play-ai" class="btn" onclick="window.location.href='play-ai.html'">Play vs AI</button>
@@ -23,9 +25,16 @@
     </main>
 
     <footer class="menu-footer">
-        <p>v2.5 • by dig0w</p>
+        <p>v<span id="version"></span> • by <span id="author"></span></p>
     </footer>
 
 </body>
+
+<script type="module">
+    import config from './package.json' with { type: 'json' };
+
+    document.getElementById('version').innerText = config.version;
+    document.getElementById('author').innerText = config.author;
+</script>
 
 </html>
