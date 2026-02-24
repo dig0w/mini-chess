@@ -1,7 +1,10 @@
 Build a browser chess engine, to play against my AI.
 
 ✅ To Do List:
-[ ] AI game phases
+[ ] Static Exchange Evaluation
+[ ] Mid game amount of pawns near king (in row in front)
+[ ] Mobility (back again?)
+[ ] Passed pawns
 [ ] Package it
 
 

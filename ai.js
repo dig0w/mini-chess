@@ -13,74 +13,154 @@ export class ChessAI {
 
         this.INFINITY = 1000000;
 
-        this.pieceValues = { P: 100, N: 320, B: 330, R: 500, Q: 900, K: 20000 };
-
-        this.pst = {
-            P: [
-                [0, 0, 0, 0, 0, 0, 0, 0],
-                [5, 10, 10, -20, -20, 10, 10, 5],
-                [5, -5, -10, 0, 0, -10, -5, 5],
-                [0, 0, 0, 20, 20, 0, 0, 0],
-                [5, 5, 10, 25, 25, 10, 5, 5],
-                [10, 10, 20, 30, 30, 20, 10, 10],
-                [50, 50, 50, 50, 50, 50, 50, 50],
-                [0, 0, 0, 0, 0, 0, 0, 0]
-            ],
-            N: [
-                [-50,-40,-30,-30,-30,-30,-40,-50],
-                [-40,-20, 0, 5, 5, 0,-20,-40],
-                [-30, 5,10,15,15,10, 5,-30],
-                [-30, 0,15,20,20,15, 0,-30],
-                [-30, 5,15,20,20,15, 5,-30],
-                [-30, 0,10,15,15,10, 0,-30],
-                [-40,-20, 0, 0, 0, 0,-20,-40],
-                [-50,-40,-30,-30,-30,-30,-40,-50]
-            ],
-            B: [
-                [-20,-10,-10,-10,-10,-10,-10,-20],
-                [-10, 0, 0, 0, 0, 0, 0,-10],
-                [-10, 0, 5,10,10, 5, 0,-10],
-                [-10, 5, 5,10,10, 5, 5,-10],
-                [-10, 0,10,10,10,10, 0,-10],
-                [-10,10,10,10,10,10,10,-10],
-                [-10, 5, 0, 0, 0, 0, 5,-10],
-                [-20,-10,-10,-10,-10,-10,-10,-20]
-            ],
-            R: [
-                [0,0,0,0,0,0,0,0],
-                [5,10,10,10,10,10,10,5],
-                [-5,0,0,0,0,0,0,-5],
-                [-5,0,0,0,0,0,0,-5],
-                [-5,0,0,0,0,0,0,-5],
-                [-5,0,0,0,0,0,0,-5],
-                [-5,0,0,0,0,0,0,-5],
-                [0,0,0,5,5,0,0,0]
-            ],
-            Q: [
-                [-20,-10,-10,-5,-5,-10,-10,-20],
-                [-10,0,0,0,0,0,0,-10],
-                [-10,0,5,5,5,5,0,-10],
-                [-5,0,5,5,5,5,0,-5],
-                [0,0,5,5,5,5,0,-5],
-                [-10,5,5,5,5,5,0,-10],
-                [-10,0,5,0,0,0,0,-10],
-                [-20,-10,-10,-5,-5,-10,-10,-20]
-            ],
-            K: [
-                [-30,-40,-40,-50,-50,-40,-40,-30],
-                [-30,-40,-40,-50,-50,-40,-40,-30],
-                [-30,-40,-40,-50,-50,-40,-40,-30],
-                [-30,-40,-40,-50,-50,-40,-40,-30],
-                [-20,-30,-30,-40,-40,-30,-30,-20],
-                [-10,-20,-20,-20,-20,-20,-20,-10],
-                [20, 20, 0, 0, 0, 0, 20, 20],
-                [20, 30, 10, 0, 0, 10, 30, 20]
-            ]
+        this.piecesIndexes = {
+            P: 0, N: 1, B: 2, R: 3, Q: 4, K: 5,
+            p: 0, n: 1, b: 2, r: 3, q: 4, k: 5
         };
+
+        this.mgValues = [100, 320, 330, 500, 900, 20000];
+        this.egValues = [120, 310, 330, 510, 920, 20000];
+
+        this.phaseWeights = [0, 10, 10, 20, 40, 0];
+        this.maxPhase = 256;
+
+        this.mgPst = [
+            [
+                [ 0, 0, 0, 0, 0, 0, 0, 0 ],
+                [ 5, 10, 10, -20, -20, 10, 10, 5 ]
+                [ 5, -5, -10, 0, 0, -10, -5, 5 ],
+                [ 0, 0, 0, 20, 20, 0, 0, 0 ],
+                [ 5, 5, 10, 25, 25, 10, 5, 5 ],
+                [ 10, 10, 20, 30, 30, 20, 10, 10 ],
+                [ 50, 50, 50, 50, 50, 50, 50, 50 ],
+                [ 0, 0, 0, 0, 0, 0, 0, 0 ]
+            ],
+            [
+                [ -50,-40,-30,-30,-30,-30,-40,-50 ],
+                [ -40,-20, 0, 5, 5, 0,-20,-40 ],
+                [ -30, 5,10,15,15,10, 5,-30 ],
+                [ -30, 0,15,20,20,15, 0,-30 ],
+                [ -30, 5,15,20,20,15, 5,-30 ],
+                [ -30, 0,10,15,15,10, 0,-30 ],
+                [ -40,-20, 0, 0, 0, 0,-20,-40 ],
+                [ -50,-40,-30,-30,-30,-30,-40,-50 ]
+            ],
+            [
+                [ -20,-10,-10,-10,-10,-10,-10,-20 ],
+                [ -10, 0, 0, 0, 0, 0, 0,-10 ],
+                [ -10, 0, 5,10,10, 5, 0,-10 ],
+                [ -10, 5, 5,10,10, 5, 5,-10 ],
+                [ -10, 0,10,10,10,10, 0,-10 ],
+                [ -10,10,10,10,10,10,10,-10 ],
+                [ -10, 5, 0, 0, 0, 0, 5,-10 ],
+                [ -20,-10,-10,-10,-10,-10,-10,-20 ]
+            ],
+            [
+                [ 0,0,0,0,0,0,0,0 ],
+                [ 5,10,10,10,10,10,10,5 ],
+                [ -5,0,0,0,0,0,0,-5 ],
+                [ -5,0,0,0,0,0,0,-5 ],
+                [ -5,0,0,0,0,0,0,-5 ],
+                [ -5,0,0,0,0,0,0,-5 ],
+                [ -5,0,0,0,0,0,0,-5 ],
+                [ 0,0,0,5,5,0,0,0 ]
+            ],
+            [
+                [ -20,-10,-10,-5,-5,-10,-10,-20 ],
+                [ -10,0,0,0,0,0,0,-10 ],
+                [ -10,0,5,5,5,5,0,-10 ],
+                [ -5,0,5,5,5,5,0,-5 ],
+                [ 0,0,5,5,5,5,0,-5 ],
+                [ -10,5,5,5,5,5,0,-10 ],
+                [ -10,0,5,0,0,0,0,-10 ],
+                [ -20,-10,-10,-5,-5,-10,-10,-20 ]
+            ],
+            [
+                [ -30,-40,-40,-50,-50,-40,-40,-30 ],
+                [ -30,-40,-40,-50,-50,-40,-40,-30 ],
+                [ -30,-40,-40,-50,-50,-40,-40,-30 ],
+                [ -30,-40,-40,-50,-50,-40,-40,-30 ],
+                [ -20,-30,-30,-40,-40,-30,-30,-20 ],
+                [ -10,-20,-20,-20,-20,-20,-20,-10 ],
+                [ 20, 20, 0, 0, 0, 0, 20, 20 ],
+                [ 20, 30, 10, 0, 0, 10, 30, 20 ]
+            ]
+        ];
+        this.egPst = [
+            [
+                [ 0, 0, 0, 0, 0, 0, 0, 0 ],
+                [ 10, 10, 10, 10, 10, 10, 10, 10 ],
+                [ 5, 5, 5, 5, 5, 5, 5, 5 ],
+                [ 0, 0, 0, 10, 10, 0, 0, 0 ],
+                [ 0, 0, 0, 20, 20, 0, 0, 0 ],
+                [ 5, 5, 5, 30, 30, 5, 5, 5 ],
+                [ 10, 10, 10, 50, 50, 10, 10, 10 ],
+                [ 0, 0, 0, 0, 0, 0, 0, 0 ]
+            ],
+            [
+                [ -40,-30,-20,-20,-20,-20,-30,-40 ],
+                [ -30,-10, 0, 5, 5, 0,-10,-30 ],
+                [ -20, 5,10,15,15,10, 5,-20 ],
+                [ -20, 0,15,20,20,15, 0,-20 ],
+                [ -20, 5,15,20,20,15, 5,-20 ],
+                [ -20, 0,10,15,15,10, 0,-20 ],
+                [ -30,-10, 0, 0, 0, 0,-10,-30 ],
+                [ -40,-30,-20,-20,-20,-20,-30,-40 ]
+            ],
+            [
+                [ -20,-10,-10,-10,-10,-10,-10,-20 ],
+                [ -10, 0, 0, 0, 0, 0, 0,-10 ],
+                [ -10, 0, 5,10,10, 5, 0,-10 ],
+                [ -10, 0,10,15,15,10, 0,-10 ],
+                [ -10, 0,10,15,15,10, 0,-10 ],
+                [ -10, 5,10,10,10,10, 5,-10 ],
+                [ -10, 0, 0, 0, 0, 0, 0,-10 ],
+                [ -20,-10,-10,-10,-10,-10,-10,-20 ]
+            ],
+            [
+                [ 0,0,0,5,5,0,0,0 ],
+                [ -5,0,0,0,0,0,0,-5 ],
+                [ -5,0,0,0,0,0,0,-5 ],
+                [ -5,0,0,0,0,0,0,-5 ],
+                [ -5,0,0,0,0,0,0,-5 ],
+                [ -5,0,0,0,0,0,0,-5 ],
+                [ 5,10,10,10,10,10,10,5 ],
+                [ 0,0,0,0,0,0,0,0 ]
+            ],
+            [
+                [ -20,-10,-10,-5,-5,-10,-10,-20 ],
+                [ -10,0,0,0,0,0,0,-10 ],
+                [ -10,0,5,5,5,5,0,-10 ],
+                [ -5,0,5,5,5,5,0,-5 ],
+                [ -5,0,5,5,5,5,0,-5 ],
+                [ -10,5,5,5,5,5,0,-10 ],
+                [ -10,0,5,0,0,0,0,-10 ],
+                [ -20,-10,-10,-5,-5,-10,-10,-20 ]
+            ],
+            [
+                [ -50,-40,-30,-20,-20,-30,-40,-50 ],
+                [ -40,-20,-10,0,0,-10,-20,-40 ],
+                [ -30,-10,20,30,30,20,-10,-30 ],
+                [ -20,0,30,40,40,30,0,-20 ],
+                [ -20,0,30,40,40,30,0,-20 ],
+                [ -30,-10,20,30,30,20,-10,-30 ],
+                [ -40,-20,-10,0,0,-10,-20,-40 ],
+                [ -50,-40,-30,-20,-20,-30,-40,-50 ]
+            ]
+        ];
 
         this.killerMoves = {};
         this.history = Array.from({ length: engine.rows * engine.cols }, () => new Array(engine.rows * engine.cols).fill(0));
         this.TT = new Map();
+
+        this.MVV_LVA = [
+            [15, 14, 13, 12, 11, 10],
+            [25, 24, 23, 22, 21, 20],
+            [35, 34, 33, 32, 31, 30],
+            [45, 44, 43, 42, 41, 40],
+            [55, 54, 53, 52, 51, 50],
+            [65, 64, 63, 62, 61, 60]
+        ];
 
         this.nodes = 0;
         this.nodesMove = 0;
@@ -358,9 +438,7 @@ export class ChessAI {
 
         // 2. MVV-LVA for captures
         if (!engineState.isEmpty(move[1])) {
-            const victimValue = this.pieceValues[target.toUpperCase()] || 0;
-            const attackerValue = this.pieceValues[moving.toUpperCase()] || 0;
-            score += victimValue * 10 - attackerValue;
+            score += this.MVV_LVA[this.piecesIndexes[target]][this.piecesIndexes[moving]] || 0;
         }
 
         // 3. Promotions
@@ -388,7 +466,7 @@ export class ChessAI {
 
     quiescence(engineState, alpha, beta, qDepth = 0) {
         this.nodes++;
-        if (qDepth > 3 || engineState.gameCondition !== 'PLAYING') return this.evaluate(engineState);
+        if (engineState.gameCondition !== 'PLAYING') return this.evaluate(engineState);
 
         const inCheck = engineState.isKingInCheck(engineState.turn === 0);
 
@@ -418,7 +496,7 @@ export class ChessAI {
             // Delta Prune
             if (engineState.isEmpty(move[1]) === false) {
                 const target = engineState.getPieceSq(move[1]);
-                const victimValue = this.pieceValues[target.toUpperCase()] || 0;
+                const victimValue = this.mgValues[this.piecesIndexes[target]] || 0;
                 const deltaMargin = 100; // small safety buffer
 
                 // If even the best-case gain can't reach alpha -> prune
@@ -453,7 +531,9 @@ export class ChessAI {
         if (engineState.gameCondition.startsWith('BLACK_WIN')) return (-1000000 + (engineState.totalPlies * 2)) * -side;
         if (engineState.gameCondition.startsWith('DRAW')) return -500 * -side;
 
-        let score = 0;
+        let mg = 0;
+        let eg = 0;
+        let phase = 0;
 
         const rows = engineState.rows;
         const cols = engineState.cols;
@@ -467,9 +547,14 @@ export class ChessAI {
             const bb = pieceBB.clone();
 
             const isWhite = engineState.isWhitePiece(piece);
-            const typeChar = piece.toUpperCase();
-            const pieceVal = (this.pieceValues[typeChar] || 0);
-            const pst = this.pst[typeChar];
+            const pieceIndex = this.piecesIndexes[piece];
+            const queenIndex = this.piecesIndexes['Q'];
+
+            const mgValues = (this.mgValues[pieceIndex] || 0);
+            const egValues = (this.egValues[pieceIndex] || 0);
+            const mgPst = this.mgPst[pieceIndex];
+            const egPst = this.egPst[pieceIndex];
+
             const dir = isWhite ? 1 : -1;
 
             let sq = bb.bitIndex();
@@ -477,12 +562,15 @@ export class ChessAI {
                 const { r, c } = engineState.fromSq(sq);
 
                 // Material
-                score += dir * pieceVal;
+                mg += dir * mgValues;
+                eg += dir * egValues;
 
                 // PST bonus
                 if (this.engine.isNormal) {
-                    const pstValue = isWhite ? pst[r][c] : pst[rows - 1 - r][c];
-                    score += pstValue;
+                    const mgpstValue = isWhite ? mgPst[r][c] : mgPst[rows - 1 - r][c];
+                    const egpstValue = isWhite ? egPst[r][c] : egPst[rows - 1 - r][c];
+                    mg += mgpstValue;
+                    eg += egpstValue;
                 }
 
                 const pawnsOnFile = pawnsBB.and(ChessEngine.fileMasks[c]).popcount();
@@ -491,45 +579,57 @@ export class ChessAI {
                                         blackPawns.and(ChessEngine.fileMasks[c]).popcount();
 
                 // Piece Types
-                switch (typeChar) {
-                    case 'P':
+                switch (pieceIndex) {
+                    case 0:
                         // Promotion proximity
                         const progress = isWhite ? (rows - 1 - r) / (rows - 1) : r / (rows - 1);
-                        score += dir * Math.pow(progress, 5) * this.pieceValues['Q'];
+                        mg += dir * progress * (this.mgValues[queenIndex] || 0) * .5;
+                        eg += dir * Math.pow(progress, 5) * (this.egValues[queenIndex] || 0);
 
                         // Doubled pawns
                         if (ownPawnsOnFile > 1) {
                             const penalty = (ownPawnsOnFile - 1) * 5;
-                            score += -dir * penalty;
+                            mg += -dir * penalty;
                         }
                         break;
-                    case 'N':
+                    case 1:
                         // Distance to middle
                         const dr = r - ((rows - 1) / 2);
                         const dc = c - ((cols - 1) / 2);
                         const distance = Math.sqrt(dr * dr + dc * dc);
 
-                        score += dir * -distance * 5;
+                        mg += dir * -distance * 5;
+                        eg += dir * -distance * 5;
                         break;
-                    case 'B':
+                    case 2:
                         break;
-                    case 'R':
+                    case 3:
                         if (pawnsOnFile === 0) { // Open file bonus
-                            score += dir * 20;
+                            mg += dir * 20;
+                            eg += dir * 40;
                         } else if (ownPawnsOnFile === 0) { // Semi-open file bonus
-                            score += dir * 10;
+                            mg += dir * 10;
+                            eg += dir * 20;
+                        }
+
+                        const rank = isWhite ? rows - 2 : 1;
+                        if (r == rank) {
+                            mg += dir * 40;
+                            eg += dir * 10;
                         }
                         break;
-                    case 'Q':
+                    case 4:
                         break;
-                    case 'K':
+                    case 5:
                         if (pawnsOnFile === 0) { // Open file bonus
-                            score += -dir * 35;
+                            mg += -dir * 35;
                         } else if (ownPawnsOnFile === 0) { // Semi-open file bonus
-                            score += -dir * 20;
+                            mg += -dir * 20;
                         }
                         break;
                 }
+
+                phase += this.phaseWeights[pieceIndex];
 
                 bb.clearBit(sq);
                 sq = bb.bitIndex();
@@ -537,10 +637,28 @@ export class ChessAI {
         }
 
         // Castling Rights
-        score += engineState.castlingRights.whiteKingSide ? 5 : -5;
-        score += engineState.castlingRights.whiteQueenSide ? 5 : -5;
-        score += engineState.castlingRights.blackKingSide ? -5 : 5;
-        score += engineState.castlingRights.blackQueenSide ? -5 : 5;
+        mg += engineState.castlingRights.whiteKingSide ? 5 : -5;
+        mg += engineState.castlingRights.whiteQueenSide ? 5 : -5;
+        mg += engineState.castlingRights.blackKingSide ? -5 : 5;
+        mg += engineState.castlingRights.blackQueenSide ? -5 : 5;
+
+        // White Bishop Pair
+        if (pieces['B'].and(ChessEngine.lightSquares).popcount() > 0 && pieces['B'].and(ChessEngine.darkSquares).popcount() > 0) {
+            mg += 30;
+            eg += 50;
+        }
+        // Black Bishop Pair
+        if (pieces['b'].and(ChessEngine.lightSquares).popcount() > 0 && pieces['b'].and(ChessEngine.darkSquares).popcount() > 0) {
+            mg -= 30;
+            eg -= 50;
+        }
+
+        // Normalize phase (0 = EG, maxPhase = MG)
+        if (phase > this.maxPhase) phase = this.maxPhase;
+        if (phase < 0) phase = 0;
+
+        // Tapered eval
+        let score = (mg * phase + eg * (this.maxPhase - phase)) >> 8;
 
         // Discourage long games
         score -= engineState.totalPlies * 2;

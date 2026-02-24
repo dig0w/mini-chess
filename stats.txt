@@ -47,3 +47,16 @@ My ai (20/12 20:00 t=2s) vs Stockfish (listudy.org)     Black Won   196474  56  
 My ai (20/12 20:00 t=2s) vs Stockfish (listudy.org)     Black Won   977518  76      No Mobility
 
 My ai (22/12 11:00 t=2s) vs Stockfish (listudy.org)     Black Won   3535274 56      Too many nodes
+
+
+
+
+Nomal Evo (t=2s) vs Stockfish 17.1                      Black Won   ...     35
+Castle Evo (t=2s) vs Stockfish 17.1                     Black Won   ...     25
+Castle and Long Evo (t=2s) vs Stockfish 17.1            Black Won   ...     26
+Castle, Long and types Evo (t=2s) vs Stockfish 17.1     Black Won   ...     26
+Castle, Long and pst Evo (t=2s) vs Stockfish 17.1       Black Won   ...     39
+
+
+Castle, Long and pst Evo (t=2s) vs 1320 Elo             White Won   ...     9
+Castle, Long and pst Evo (t=2s) vs 1500 Elo             Black Won   ...     44

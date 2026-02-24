@@ -11,6 +11,8 @@ export class ChessEngine {
     static kingMoves = Array(64);
 
     static fileMasks = Array(8);
+    static lightSquares = new BitBoard();
+    static darkSquares = new BitBoard();
 
     static initialized = false;
 
@@ -1035,7 +1037,7 @@ export class ChessEngine {
 
     initMoveTables() {
         const add = (bb, sq) => bb.setBit(sq);
-        const inBoard = (r,c) => r >= 0 && r < this.rows && c >= 0 && c < this.cols;
+        const inBoard = (r,c) => r >= 0 && r < 8 && c >= 0 && c < 8;
 
         // Loop squares 0..63
         for (let sq = 0; sq < 64; sq++) {
@@ -1109,6 +1111,14 @@ export class ChessEngine {
                 if (inBoard(rr, cc)) add(kbb, this.toSq(rr, cc));
             }
             ChessEngine.kingMoves[sq] = kbb;
+
+
+            // Square Color
+            if ((sq % 2) == 1) {
+                ChessEngine.lightSquares.setBit(sq);
+            } else {
+                ChessEngine.darkSquares.setBit(sq);
+            }
         }
 
         // File masks
